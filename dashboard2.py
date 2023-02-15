@@ -40,8 +40,8 @@ elif pick=="Sunburst" or pick=="Tree Map":
     l4 = st.sidebar.selectbox("Pick a category for fourth layer",dfColumns,index=dfColumns.index("ISSUER"))
     
     if pick=="Sunburst":
-        fig = px.sunburst(finDeals, path=[l1, l2, l3,l4], values='SIZE')
+        fig = px.sunburst(findeals, path=[l1, l2, l3,l4], values='SIZE')
     else:
-        fig = px.treemap(finDeals, path=[l1, l2, l3,l4], values='SIZE')
+        fig = px.treemap(findeals, path=[l1, l2, l3,l4], values='SIZE')
 
 st.plotly_chart(fig)
