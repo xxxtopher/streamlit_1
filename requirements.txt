@@ -1,1 +1,7 @@
 plotly
+yfinance
+pandas
+datetime
+streamlit
+beautifulsoup4
+requests
