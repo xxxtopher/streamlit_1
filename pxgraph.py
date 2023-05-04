@@ -36,7 +36,7 @@ def search_stock_news(stock_ticker):
 
 
 # Main Streamlit app
-st.title("Hong Kong Stock Analysis Dashboard")
+st.title("Stock Analysis Dashboard")
 
 # Get user input for stock ticker and date range
 stock_ticker = st.text_input("Enter stock ticker (e.g. 0001.HK):")
