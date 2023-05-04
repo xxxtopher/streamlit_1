@@ -4,7 +4,6 @@ import plotly.graph_objs as go
 import plotly.express as px
 from datetime import datetime, timedelta
 import streamlit as st
-from bs4 import BeautifulSoup
 import requests
 
 
@@ -15,7 +14,7 @@ def download_stock_data(stock_ticker, start_date, end_date):
     return stock_data
 
 
-def create_candlestick_chart(stock_data, stock_ticker):
+def create_candlestick_chart(stock_data):
     fig = go.Figure(data=[go.Candlestick(x=stock_data['Date'],
                                          open=stock_data['Open'],
                                          high=stock_data['High'],
@@ -27,21 +26,13 @@ def create_candlestick_chart(stock_data, stock_ticker):
     return fig
 
 
-def display_stock_news(stock_ticker):
-    query = f"{stock_ticker} stock news"
-    url = f"https://www.google.com/search?q={query}&tbm=nws&tbs=qdr:m"
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"}
-    res = requests.get(url, headers=headers)
-    soup = BeautifulSoup(res.text, 'html.parser')
-    news_items = soup.select(".dbsr")
-    if not news_items:
-        st.write("No news articles found.")
-    else:
-        for item in news_items:
-            title = item.find("div", class_="JheGif nDgy9d").get_text()
-            link = item.find("a", href=True)['href']
-            st.write(f"[{title}]({link})")
+def search_stock_news(stock_ticker):
+    api_key = '7b36370fdca94d0eba309efc7819b48c'
+    query = stock_ticker
+    url = f"https://newsapi.org/v2/everything?q={query}&apiKey={api_key}&sortBy=publishedAt&pageSize=10"
+    response = requests.get(url)
+    articles = response.json()["articles"]
+    return articles
 
 
 # Main Streamlit app
@@ -58,8 +49,19 @@ if stock_ticker and start_date and end_date:
     stock_data = download_stock_data(stock_ticker, start_date, end_date)
 
     # Create Candlestick Chart
-    st.plotly_chart(create_candlestick_chart(stock_data, stock_ticker))
+    st.plotly_chart(create_candlestick_chart(stock_data))
 
-    # Display Stock News
+    # Search stock news
+    articles = search_stock_news(stock_ticker)
+
+    # Display stock news
     st.subheader(f"{stock_ticker} News")
-    display_stock_news(stock_ticker)
+    if not articles:
+        st.write("No news found")
+    else:
+        for article in articles:
+            st.write(article["title"])
+            st.write(article["description"])
+            st.write(article["url"])
+            st.write("---")
+
