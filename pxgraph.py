@@ -26,22 +26,6 @@ def create_candlestick_chart(stock_data):
                       yaxis_title="Price")
     return fig
 
-# Create stock information table
-def create_stock_info_table(stock_ticker):
-    stock_info = yf.Ticker(stock_ticker).info
-    last_price = stock_info['regularMarketPrice']
-    pe_ratio = stock_info['trailingPE']
-    dividend_yield = stock_info['dividendYield'] * 100
-    market_cap = stock_info['marketCap']
-    fifty_two_week_range = stock_info['fiftyTwoWeekHigh'] / stock_info['fiftyTwoWeekLow']
-    data = {'Last Price': [last_price],
-            'Price-to-Earnings Ratio (P/E)': [pe_ratio],
-            'Dividend Yield': [dividend_yield],
-            'Market Capitalization': [market_cap],
-            '52-Week Price Range': [fifty_two_week_range]}
-    df = pd.DataFrame(data)
-    return df
-
 def search_stock_news(stock_ticker):
     api_key = '7b36370fdca94d0eba309efc7819b48c'
     query = stock_ticker
@@ -70,10 +54,6 @@ if stock_ticker and start_date and end_date:
 
     # Create Candlestick Chart
     st.plotly_chart(create_candlestick_chart(stock_data))
-    
-     # Create stock information table
-    stock_info_table = create_stock_info_table(stock_ticker)
-    st.write(stock_info_table)
 
     # Search stock news
     articles = search_stock_news(stock_ticker)
