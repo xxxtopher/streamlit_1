@@ -7,29 +7,28 @@ import requests
 newsapi = NewsApiClient(api_key='7b36370fdca94d0eba309efc7819b48c')
 
 def search_news(stock_ticker):
-    # Search for news articles using NewsAPI
-    news = newsapi.get_everything(q=stock_ticker, language='zh')
-    articles = news['articles']
-    
-    # Scrape news articles from Chinese finance news websites
-    sites = ['aastocks.com', 'etnet.com', 'hkej.com']
-    for site in sites:
-        search_url = f"https://www.google.com/search?q={stock_ticker}+site%3A{site}&rlz=1C1GCEU_zh-CNHK832HK832&oq={stock_ticker}+site%3A{site}"
-        res = requests.get(search_url)
-        soup = BeautifulSoup(res.text, 'html.parser')
-        links = soup.select('.kCrYT a')
-        for i, link in enumerate(links):
-            if site in link['href']:
-                url = link['href'].split('?')[0].split('/url?q=')[1]
-                res = requests.get(url)
-                soup = BeautifulSoup(res.text, 'html.parser')
-                content = soup.select('p')
-                news_content = ''
-                for c in content:
-                    news_content += c.text
-                articles.append({'title': link.text, 'description': news_content, 'url': url})
-    
-    return articles
+    query = stock_ticker + ' 股票 新闻'
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'}
+    news_links = []
+    for url in search(query, num_results=5, lang='zh-CN', pause=2):
+        if 'aastocks' in url or 'etnet' in url or 'hkej' in url:
+            html = requests.get(url, headers=headers).text
+            soup = BeautifulSoup(html, 'html.parser')
+            for link in soup.find_all('a', href=True):
+                if 'aastocks' in link['href'] or 'etnet' in link['href'] or 'hkej' in link['href']:
+                    if len(link['href'].split('?')) > 1:
+                        url = link['href'].split('?')[0].split('/url?q=')[1]
+                        news_links.append(url)
+    news = []
+    for link in news_links:
+        try:
+            article = Article(link)
+            article.download()
+            article.parse()
+            news.append(article.text)
+        except:
+            continue
+    return news
 
 # Define Streamlit app
 st.title('Stock News Search')
