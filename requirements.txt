@@ -5,3 +5,4 @@ datetime
 streamlit
 beautifulsoup4
 requests
+newsapi
