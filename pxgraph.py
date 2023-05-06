@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 import streamlit as st
 from bs4 import BeautifulSoup
 import requests
+from newsapi import NewsApiClient
 
 # Set up News API
 newsapi = NewsApiClient(api_key='7b36370fdca94d0eba309efc7819b48c')
