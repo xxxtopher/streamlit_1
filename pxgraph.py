@@ -40,12 +40,9 @@ st.set_page_config(page_title="Hong Kong Stock Analysis Dashboard", page_icon=":
 st.title("Stock Analysis Dashboard")
 
 # Get user input for stock ticker and date range
-left_column, right_column = st.beta_columns(2)
-with left_column:
-    stock_ticker = st.text_input("Enter stock ticker (e.g. 0001.HK):")
-with right_column:
-    start_date = st.date_input("Enter start date:")
-    end_date = st.date_input("Enter end date:")
+stock_ticker = st.sidebar.text_input("Enter stock ticker (e.g. 0001.HK):")
+start_date = st.sidebar.date_input("Enter start date:")
+end_date = st.sidebar.date_input("Enter end date:")
 
 if stock_ticker and start_date and end_date:
 
