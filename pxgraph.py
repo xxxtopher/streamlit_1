@@ -6,20 +6,16 @@ from datetime import datetime, timedelta
 import streamlit as st
 from bs4 import BeautifulSoup
 import requests
-from newsapi import NewsApiClient
 
-# Set up News API
-newsapi = NewsApiClient(api_key='7b36370fdca94d0eba309efc7819b48c')
-
-# Function to download stock data
+# Download stock data
 def download_stock_data(stock_ticker, start_date, end_date):
     stock_data = yf.download(stock_ticker, start=start_date, end=end_date)
     stock_data.reset_index(inplace=True)
     stock_data["Date"] = stock_data["Date"].dt.strftime('%Y-%m-%d')
     return stock_data
 
-# Function to create candlestick chart
-def create_candlestick_chart(stock_data, stock_ticker):
+
+def create_candlestick_chart(stock_data):
     fig = go.Figure(data=[go.Candlestick(x=stock_data['Date'],
                                          open=stock_data['Open'],
                                          high=stock_data['High'],
@@ -30,32 +26,26 @@ def create_candlestick_chart(stock_data, stock_ticker):
                       yaxis_title="Price")
     return fig
 
-# Function to search news related to stock ticker
-def search_news(stock_ticker):
-    query = f"{stock_ticker} stock news"
-    newsapi = NewsApiClient(api_key='7b36370fdca94d0eba309efc7819b48c')
-    top_headlines = newsapi.get_top_headlines(q=query, language='en', page_size=5)
-    articles = top_headlines['articles']
-    if len(articles) < 5:
-        remaining = 5 - len(articles)
-        for j in search(query, num=remaining, lang='en', pause=2):
-            article = {}
-            article['title'] = j['title']
-            article['url'] = j['link']
-            article['description'] = j['snippet']
-            article['source'] = j['source']['name']
-            article['publishedAt'] = j['pubDate']
-            articles.append(article)
+def search_stock_news(stock_ticker):
+    api_key = '7b36370fdca94d0eba309efc7819b48c'
+    query = stock_ticker
+    url = f"https://newsapi.org/v2/everything?q={query}&apiKey={api_key}&sortBy=publishedAt&pageSize=10"
+    response = requests.get(url)
+    articles = response.json()["articles"]
     return articles
 
+
 # Main Streamlit app
-st.set_page_config(layout="wide")
+st.set_page_config(page_title="Hong Kong Stock Analysis Dashboard", page_icon=":chart_with_upwards_trend:")
 st.title("Stock Analysis Dashboard")
 
 # Get user input for stock ticker and date range
-stock_ticker = st.sidebar.text_input("Enter stock ticker (e.g. 0001.HK):")
-start_date = st.sidebar.date_input("Enter start date:")
-end_date = st.sidebar.date_input("Enter end date:")
+left_column, right_column = st.beta_columns(2)
+with left_column:
+    stock_ticker = st.text_input("Enter stock ticker (e.g. 0001.HK):")
+with right_column:
+    start_date = st.date_input("Enter start date:")
+    end_date = st.date_input("Enter end date:")
 
 if stock_ticker and start_date and end_date:
 
@@ -63,13 +53,19 @@ if stock_ticker and start_date and end_date:
     stock_data = download_stock_data(stock_ticker, start_date, end_date)
 
     # Create Candlestick Chart
-    st.plotly_chart(create_candlestick_chart(stock_data, stock_ticker))
+    st.plotly_chart(create_candlestick_chart(stock_data))
 
-    # Display news related to stock ticker
-    st.subheader(f"Latest news for {stock_ticker}")
-    news = search_news(stock_ticker)
-    if news:
-        for article in news:
-            st.write(f"- [{article['title']}]({article['url']})")
+    # Search stock news
+    articles = search_stock_news(stock_ticker)
+
+    # Display stock news
+    st.subheader(f"{stock_ticker} News")
+    if not articles:
+        st.write("No news found")
     else:
-        st.write("No news found.")
+        for article in articles:
+            st.write(article["title"])
+            st.write(article["description"])
+            st.write(article["url"])
+            st.write("---")
+
