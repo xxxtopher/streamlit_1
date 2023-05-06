@@ -1,5 +1,3 @@
-!pip install newsapi-python
-
 import yfinance as yf
 import pandas as pd
 import plotly.graph_objs as go
