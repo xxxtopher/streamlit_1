@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 import requests
 
 # Set up News API
-newsapi = NewsApiClient(api_key='7b36370fdca94d0eba309efc7819b48c')
+newsapi = NewsApiClient(api_key=7b36370fdca94d0eba309efc7819b48c)
 
 # Function to download stock data
 def download_stock_data(stock_ticker, start_date, end_date):
