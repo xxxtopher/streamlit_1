@@ -6,8 +6,6 @@ from datetime import datetime, timedelta
 import streamlit as st
 from bs4 import BeautifulSoup
 import requests
-from newsapi import NewsApiClient
-from googlesearch import search
 
 # Set up News API
 newsapi = NewsApiClient(api_key='7b36370fdca94d0eba309efc7819b48c')
@@ -33,24 +31,21 @@ def create_candlestick_chart(stock_data, stock_ticker):
 
 # Function to search news related to stock ticker
 def search_news(stock_ticker):
-    # Search news using News API
-    news = newsapi.get_everything(q=stock_ticker, language='en', sort_by='publishedAt')
-    articles = news['articles']
-    
-    # Search news using Google search
-    google_news = []
-    query = f"{stock_ticker} news"
-    for j in search(query, num_results=5, lang='en', pause=2):
-        if 'news.google.com' in j:
-            res = requests.get(j)
-            soup = BeautifulSoup(res.text, 'html.parser')
-            for i in soup.select('.NiLAwe.y6IFtc.R7GTQ.keNKEd.j7vNaf.nID9nc'):
-                google_news.append({'title': i.h3.text, 'link': i.a['href']})
-    
-    # Combine and sort news by date
-    all_news = articles + google_news
-    all_news_sorted = sorted(all_news, key=lambda x: x['publishedAt'], reverse=True)
-    return all_news_sorted
+    query = f"{stock_ticker} stock news"
+    newsapi = NewsApiClient(api_key='7b36370fdca94d0eba309efc7819b48c')
+    top_headlines = newsapi.get_top_headlines(q=query, language='en', page_size=5)
+    articles = top_headlines['articles']
+    if len(articles) < 5:
+        remaining = 5 - len(articles)
+        for j in search(query, num=remaining, lang='en', pause=2):
+            article = {}
+            article['title'] = j['title']
+            article['url'] = j['link']
+            article['description'] = j['snippet']
+            article['source'] = j['source']['name']
+            article['publishedAt'] = j['pubDate']
+            articles.append(article)
+    return articles
 
 # Main Streamlit app
 st.set_page_config(layout="wide")
