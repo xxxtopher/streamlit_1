@@ -40,7 +40,7 @@ def search_news(stock_ticker):
     # Search news using Google search
     google_news = []
     query = f"{stock_ticker} news"
-    for j in search(query, num=5, stop=5, pause=2):
+    for j in search(query, num_results=5, sleep_time=2):
         if 'news.google.com' in j:
             res = requests.get(j)
             soup = BeautifulSoup(res.text, 'html.parser')
