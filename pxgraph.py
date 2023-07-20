@@ -14,7 +14,6 @@ def download_stock_data(stock_ticker, start_date, end_date):
     stock_data["Date"] = stock_data["Date"].dt.strftime('%Y-%m-%d')
     return stock_data
 
-
 def create_candlestick_chart(stock_data):
     fig = go.Figure(data=[go.Candlestick(x=stock_data['Date'],
                                          open=stock_data['Open'],
@@ -34,15 +33,22 @@ def search_stock_news(stock_ticker):
     articles = response.json()["articles"]
     return articles
 
-
 # Main Streamlit app
 st.set_page_config(page_title="Hong Kong Stock Analysis Dashboard", page_icon=":chart_with_upwards_trend:")
 st.title("Stock Analysis Dashboard")
 
 # Get user input for stock ticker and date range
 stock_ticker = st.sidebar.text_input("Enter stock ticker (e.g. 0001.HK):")
-start_date = st.sidebar.date_input("Enter start date:")
-end_date = st.sidebar.date_input("Enter end date:")
+
+# Get the current date
+current_date = datetime.now()
+
+# Set the default end date to the current date
+end_date = st.sidebar.date_input("Enter end date:", current_date)
+
+# Set the default start date to one year before the end date
+default_start_date = current_date - timedelta(days=365)
+start_date = st.sidebar.date_input("Enter start date:", default_start_date)
 
 if stock_ticker and start_date and end_date:
 
@@ -65,4 +71,3 @@ if stock_ticker and start_date and end_date:
             st.write(article["description"])
             st.write(article["url"])
             st.write("---")
-
