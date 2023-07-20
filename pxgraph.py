@@ -2,7 +2,7 @@ import yfinance as yf
 import pandas as pd
 import plotly.graph_objs as go
 import plotly.express as px
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta
 import streamlit as st
 from bs4 import BeautifulSoup
 import requests
@@ -23,11 +23,6 @@ def create_candlestick_chart(stock_data):
     fig.update_layout(title=f"{stock_ticker} Candlestick Chart",
                       xaxis_title="Date",
                       yaxis_title="Price")
-
-    # Remove non-trading days
-    trading_days = pd.date_range(start=stock_data['Date'].min(), end=stock_data['Date'].max(), freq='D')
-    fig.update_xaxes(type='category', categoryorder='array', categoryarray=[str(day.date()) for day in trading_days])
-
     return fig
 
 def search_stock_news(stock_ticker):
@@ -76,4 +71,5 @@ if stock_ticker and start_date and end_date:
             st.write(article["description"])
             st.write(article["url"])
             st.write("---")
+
 
