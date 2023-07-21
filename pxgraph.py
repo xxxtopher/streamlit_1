@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.graph_objs as go
 from datetime import datetime, timedelta
 import streamlit as st
-import requests
+import feedparser
 
 # Function to fetch ticker options from Alpha Vantage API based on user input
 def get_ticker_options(query):
@@ -35,7 +35,7 @@ def create_candlestick_chart(stock_data):
                                          high=stock_data['High'],
                                          low=stock_data['Low'],
                                          close=stock_data['Close'])])
-    fig.update_layout(title=f"{stock_ticker_input} Candlestick Chart",
+    fig.update_layout(title=f"{selected_ticker} Candlestick Chart",
                       xaxis_title="Date",
                       yaxis_title="Price",
                       height=600)
@@ -46,12 +46,10 @@ def create_candlestick_chart(stock_data):
 
     return fig
 
-def search_stock_news(stock_ticker):
-    api_key = '7b36370fdca94d0eba309efc7819b48c'
-    query = stock_ticker
-    url = f"https://newsapi.org/v2/everything?q={query}&apiKey={api_key}&sortBy=publishedAt&pageSize=10"
-    response = requests.get(url)
-    articles = response.json()["articles"]
+def search_stock_news(selected_ticker):
+    rss_feed_url = f"https://finance.yahoo.com/rss/headline?s={selected_ticker}"
+    feed = feedparser.parse(rss_feed_url)
+    articles = feed.entries
     return articles
 
 # Main Streamlit app
@@ -94,7 +92,7 @@ if selected_ticker and start_date and end_date:
         st.write("No news found")
     else:
         for article in articles:
-            st.write(article["title"])
-            st.write(article["description"])
-            st.write(article["url"])
+            st.write(article.title)
+            st.write(article.description)
+            st.write(article.link)
             st.write("---")
