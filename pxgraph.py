@@ -3,7 +3,6 @@ import pandas as pd
 import plotly.graph_objs as go
 from datetime import datetime, timedelta
 import streamlit as st
-from bs4 import BeautifulSoup
 import requests
 
 # Function to fetch ticker options from Alpha Vantage API based on user input
@@ -65,30 +64,8 @@ stock_ticker_input = st.sidebar.text_input("Enter stock ticker (e.g. AAPL):")
 # Fetch ticker options from Alpha Vantage API based on user input
 ticker_options = get_ticker_options(stock_ticker_input)
 
-# Use datalist HTML element for the dropdown list
-st.sidebar.markdown("<label for='ticker_input'>Choose a ticker:</label>", unsafe_allow_html=True)
-ticker_input = st.sidebar.text_input("Enter stock ticker (e.g. AAPL):", value=stock_ticker_input, key="ticker_input")
-
-# Embed custom JavaScript code for the dropdown list functionality
-js_code = f"""
-<script>
-    var tickers = {ticker_options};
-    var inputElement = document.getElementById('ticker_input');
-    var dataList = document.getElementById('tickers');
-
-    inputElement.addEventListener('input', function() {{
-        dataList.innerHTML = '';
-        var inputText = inputElement.value.toUpperCase();
-        var matchedTickers = tickers.filter(ticker => ticker.startsWith(inputText));
-        matchedTickers.forEach(ticker => {{
-            var option = document.createElement('option');
-            option.value = ticker;
-            dataList.appendChild(option);
-        }});
-    }});
-</script>
-"""
-st.sidebar.markdown(js_code, unsafe_allow_html=True)
+# Display the ticker options as a dropdown
+selected_ticker = st.sidebar.selectbox("Choose a ticker:", ticker_options, index=0)
 
 # Get the current date
 current_date = datetime.now()
@@ -100,19 +77,19 @@ end_date = st.sidebar.date_input("Enter end date:", current_date)
 default_start_date = current_date - timedelta(days=365)
 start_date = st.sidebar.date_input("Enter start date:", default_start_date)
 
-if ticker_input and start_date and end_date:
+if selected_ticker and start_date and end_date:
 
     # Download stock price data
-    stock_data = download_stock_data(ticker_input, start_date, end_date)
+    stock_data = download_stock_data(selected_ticker, start_date, end_date)
 
     # Create Candlestick Chart
     st.plotly_chart(create_candlestick_chart(stock_data))
 
     # Search stock news
-    articles = search_stock_news(ticker_input)
+    articles = search_stock_news(selected_ticker)
 
     # Display stock news
-    st.subheader(f"{ticker_input} News")
+    st.subheader(f"{selected_ticker} News")
     if not articles:
         st.write("No news found")
     else:
@@ -121,4 +98,3 @@ if ticker_input and start_date and end_date:
             st.write(article["description"])
             st.write(article["url"])
             st.write("---")
-
