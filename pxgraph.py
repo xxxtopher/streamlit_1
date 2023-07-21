@@ -1,10 +1,8 @@
 import yfinance as yf
 import pandas as pd
 import plotly.graph_objs as go
-import plotly.express as px
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta
 import streamlit as st
-from bs4 import BeautifulSoup
 import requests
 
 # Function to fetch ticker options from Alpha Vantage API based on user input
@@ -37,7 +35,7 @@ def create_candlestick_chart(stock_data):
                                          high=stock_data['High'],
                                          low=stock_data['Low'],
                                          close=stock_data['Close'])])
-    fig.update_layout(title=f"{stock_ticker} Candlestick Chart",
+    fig.update_layout(title=f"{stock_ticker_input} Candlestick Chart",
                       xaxis_title="Date",
                       yaxis_title="Price",
                       height=600)
@@ -68,7 +66,7 @@ ticker_options = get_ticker_options(stock_ticker_input)
 
 # Use datalist HTML element for the dropdown list
 st.sidebar.markdown("<label for='ticker_input'>Choose a ticker:</label>", unsafe_allow_html=True)
-st.sidebar.markdown(f"<input list='tickers' id='ticker_input' name='ticker_input' value='{stock_ticker_input}'>", unsafe_allow_html=True)
+ticker_input = st.sidebar.text_input("Enter stock ticker (e.g. AAPL):", value=stock_ticker_input, key="ticker_input")
 st.sidebar.markdown("<datalist id='tickers'>", unsafe_allow_html=True)
 for ticker in ticker_options:
     st.sidebar.markdown(f"<option value='{ticker}'>", unsafe_allow_html=True)
@@ -84,19 +82,19 @@ end_date = st.sidebar.date_input("Enter end date:", current_date)
 default_start_date = current_date - timedelta(days=365)
 start_date = st.sidebar.date_input("Enter start date:", default_start_date)
 
-if stock_ticker_input and start_date and end_date:
+if ticker_input and start_date and end_date:
 
     # Download stock price data
-    stock_data = download_stock_data(stock_ticker_input, start_date, end_date)
+    stock_data = download_stock_data(ticker_input, start_date, end_date)
 
     # Create Candlestick Chart
     st.plotly_chart(create_candlestick_chart(stock_data))
 
     # Search stock news
-    articles = search_stock_news(stock_ticker_input)
+    articles = search_stock_news(ticker_input)
 
     # Display stock news
-    st.subheader(f"{stock_ticker_input} News")
+    st.subheader(f"{ticker_input} News")
     if not articles:
         st.write("No news found")
     else:
@@ -105,4 +103,3 @@ if stock_ticker_input and start_date and end_date:
             st.write(article["description"])
             st.write(article["url"])
             st.write("---")
-
