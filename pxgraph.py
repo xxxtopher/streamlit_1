@@ -3,6 +3,7 @@ import pandas as pd
 import plotly.graph_objs as go
 from datetime import datetime, timedelta
 import streamlit as st
+from bs4 import BeautifulSoup
 import requests
 
 # Function to fetch ticker options from Alpha Vantage API based on user input
@@ -67,10 +68,27 @@ ticker_options = get_ticker_options(stock_ticker_input)
 # Use datalist HTML element for the dropdown list
 st.sidebar.markdown("<label for='ticker_input'>Choose a ticker:</label>", unsafe_allow_html=True)
 ticker_input = st.sidebar.text_input("Enter stock ticker (e.g. AAPL):", value=stock_ticker_input, key="ticker_input")
-st.sidebar.markdown("<datalist id='tickers'>", unsafe_allow_html=True)
-for ticker in ticker_options:
-    st.sidebar.markdown(f"<option value='{ticker}'>", unsafe_allow_html=True)
-st.sidebar.markdown("</datalist>", unsafe_allow_html=True)
+
+# Embed custom JavaScript code for the dropdown list functionality
+js_code = f"""
+<script>
+    var tickers = {ticker_options};
+    var inputElement = document.getElementById('ticker_input');
+    var dataList = document.getElementById('tickers');
+
+    inputElement.addEventListener('input', function() {{
+        dataList.innerHTML = '';
+        var inputText = inputElement.value.toUpperCase();
+        var matchedTickers = tickers.filter(ticker => ticker.startsWith(inputText));
+        matchedTickers.forEach(ticker => {{
+            var option = document.createElement('option');
+            option.value = ticker;
+            dataList.appendChild(option);
+        }});
+    }});
+</script>
+"""
+st.sidebar.markdown(js_code, unsafe_allow_html=True)
 
 # Get the current date
 current_date = datetime.now()
@@ -103,3 +121,4 @@ if ticker_input and start_date and end_date:
             st.write(article["description"])
             st.write(article["url"])
             st.write("---")
+
