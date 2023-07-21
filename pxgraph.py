@@ -7,6 +7,23 @@ import streamlit as st
 from bs4 import BeautifulSoup
 import requests
 
+# Function to fetch ticker options from Alpha Vantage API based on user input
+def get_ticker_options(query):
+    api_key = '9TOHVS9OP9X69QCH'
+    base_url = 'https://www.alphavantage.co/query'
+    params = {
+        'function': 'SYMBOL_SEARCH',
+        'keywords': query,
+        'apikey': api_key
+    }
+    response = requests.get(base_url, params=params)
+    data = response.json()
+
+    if 'bestMatches' in data:
+        return [match['1. symbol'] for match in data['bestMatches']]
+    else:
+        return []
+
 # Download stock data
 def download_stock_data(stock_ticker, start_date, end_date):
     stock_data = yf.download(stock_ticker, start=start_date, end=end_date)
@@ -23,7 +40,7 @@ def create_candlestick_chart(stock_data):
     fig.update_layout(title=f"{stock_ticker} Candlestick Chart",
                       xaxis_title="Date",
                       yaxis_title="Price",
-                      height=600)  # Set the height here, you can adjust the value as needed
+                      height=600)
 
     # Remove non-trading days
     trading_days = pd.date_range(start=stock_data['Date'].min(), end=stock_data['Date'].max(), freq='D')
@@ -44,7 +61,18 @@ st.set_page_config(page_title="Hong Kong Stock Analysis Dashboard", page_icon=":
 st.title("Stock Analysis Dashboard")
 
 # Get user input for stock ticker and date range
-stock_ticker = st.sidebar.text_input("Enter stock ticker (e.g. 0001.HK):")
+stock_ticker_input = st.sidebar.text_input("Enter stock ticker (e.g. AAPL):")
+
+# Fetch ticker options from Alpha Vantage API based on user input
+ticker_options = get_ticker_options(stock_ticker_input)
+
+# Use datalist HTML element for the dropdown list
+st.sidebar.markdown("<label for='ticker_input'>Choose a ticker:</label>", unsafe_allow_html=True)
+st.sidebar.markdown(f"<input list='tickers' id='ticker_input' name='ticker_input' value='{stock_ticker_input}'>", unsafe_allow_html=True)
+st.sidebar.markdown("<datalist id='tickers'>", unsafe_allow_html=True)
+for ticker in ticker_options:
+    st.sidebar.markdown(f"<option value='{ticker}'>", unsafe_allow_html=True)
+st.sidebar.markdown("</datalist>", unsafe_allow_html=True)
 
 # Get the current date
 current_date = datetime.now()
@@ -56,19 +84,19 @@ end_date = st.sidebar.date_input("Enter end date:", current_date)
 default_start_date = current_date - timedelta(days=365)
 start_date = st.sidebar.date_input("Enter start date:", default_start_date)
 
-if stock_ticker and start_date and end_date:
+if stock_ticker_input and start_date and end_date:
 
     # Download stock price data
-    stock_data = download_stock_data(stock_ticker, start_date, end_date)
+    stock_data = download_stock_data(stock_ticker_input, start_date, end_date)
 
     # Create Candlestick Chart
     st.plotly_chart(create_candlestick_chart(stock_data))
 
     # Search stock news
-    articles = search_stock_news(stock_ticker)
+    articles = search_stock_news(stock_ticker_input)
 
     # Display stock news
-    st.subheader(f"{stock_ticker} News")
+    st.subheader(f"{stock_ticker_input} News")
     if not articles:
         st.write("No news found")
     else:
@@ -77,3 +105,4 @@ if stock_ticker and start_date and end_date:
             st.write(article["description"])
             st.write(article["url"])
             st.write("---")
+
