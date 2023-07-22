@@ -61,10 +61,6 @@ def fetch_news_data(stock_ticker):
     data = response.json()
     return data
 
-# Main Streamlit app
-st.set_page_config(page_title="Stock Analysis Dashboard", page_icon=":chart_with_upwards_trend:", layout="wide", 
-                   initial_sidebar_state="collapsed")
-
 # Custom CSS to set the background color to black
 st.markdown(
     """
@@ -76,6 +72,10 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
+# Main Streamlit app
+st.set_page_config(page_title="Stock Analysis Dashboard", page_icon=":chart_with_upwards_trend:", layout="wide", 
+                   initial_sidebar_state="collapsed")
 
 st.title("Stock Analysis Dashboard")
 
