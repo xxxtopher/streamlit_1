@@ -66,7 +66,7 @@ def create_candlestick_chart(stock_data):
 
 # Function to fetch news articles data from Finnhub API
 def fetch_news_data(stock_ticker):
-    finnhub_api_key = 'ciu3hapr01qkv67u3n50ciu3hapr01qkv67u3n5g'
+    finnhub_api_key = 'ciu3hapr01qkv67u3n50ciu3hapr01qkv67u3n5g '
     url = f'https://finnhub.io/api/v1/company-news'
     params = {
         'symbol': stock_ticker,
