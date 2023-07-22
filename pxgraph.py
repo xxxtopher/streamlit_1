@@ -5,13 +5,39 @@ from datetime import datetime, timedelta
 import streamlit as st
 import requests
 
-# Download stock data
+# Custom CSS to set the background color to black
+st.markdown(
+    """
+    <style>
+    body {
+        background-color: black;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+# Get user input for stock ticker and date range
+selected_ticker = st.text_input("Enter stock ticker (e.g. AAPL):")
+
+# Get the current date
+current_date = datetime.now()
+
+# Set the default end date to the current date
+end_date = st.date_input("Enter end date:", current_date)
+
+# Set the default start date to one year before the end date
+default_start_date = current_date - timedelta(days=365)
+start_date = st.date_input("Enter start date:", default_start_date)
+
+# Function to fetch stock data from Yahoo Finance
 def download_stock_data(stock_ticker, start_date, end_date):
     stock_data = yf.download(stock_ticker, start=start_date, end=end_date)
     stock_data.reset_index(inplace=True)
     stock_data["Date"] = stock_data["Date"].dt.strftime('%Y-%m-%d')
     return stock_data
 
+# Function to create a candlestick chart
 def create_candlestick_chart(stock_data):
     fig = go.Figure(data=[go.Candlestick(x=stock_data['Date'],
                                          open=stock_data['Open'],
@@ -53,7 +79,7 @@ def create_candlestick_chart(stock_data):
 
 # Function to fetch news articles data from Finnhub API
 def fetch_news_data(stock_ticker):
-    finnhub_api_key = 'ciu3hapr01qkv67u3n50ciu3hapr01qkv67u3n5g '
+    finnhub_api_key = 'ciu3hapr01qkv67u3n50ciu3hapr01qkv67u3n5g'
     url = f'https://finnhub.io/api/v1/company-news'
     params = {
         'symbol': stock_ticker,
@@ -65,36 +91,11 @@ def fetch_news_data(stock_ticker):
     data = response.json()
     return data
 
-# Custom CSS to set the background color to black
-st.markdown(
-    """
-    <style>
-    body {
-        background-color: black;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
 # Main Streamlit app
 st.set_page_config(page_title="Stock Analysis Dashboard", page_icon=":chart_with_upwards_trend:", layout="wide", 
                    initial_sidebar_state="collapsed")
 
 st.title("Stock Analysis Dashboard")
-
-# Get user input for stock ticker and date range
-selected_ticker = st.text_input("Enter stock ticker (e.g. AAPL):")
-
-# Get the current date
-current_date = datetime.now()
-
-# Set the default end date to the current date
-end_date = st.date_input("Enter end date:", current_date)
-
-# Set the default start date to one year before the end date
-default_start_date = current_date - timedelta(days=365)
-start_date = st.date_input("Enter start date:", default_start_date)
 
 if selected_ticker and start_date and end_date:
 
