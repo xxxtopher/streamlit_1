@@ -21,7 +21,10 @@ def create_candlestick_chart(stock_data):
     fig.update_layout(title=f"{selected_ticker} Candlestick Chart",
                       xaxis_title="Date",
                       yaxis_title="Price",
-                      height=600)
+                      height=600,
+                      paper_bgcolor='black',  # Set background color to black
+                      plot_bgcolor='black'    # Set plot background color to black
+                      )
 
     # Remove non-trading days
     trading_days = pd.date_range(start=stock_data['Date'].min(), end=stock_data['Date'].max(), freq='D')
@@ -44,7 +47,20 @@ def fetch_news_data(stock_ticker):
     return data
 
 # Main Streamlit app
-st.set_page_config(page_title="Stock Analysis Dashboard", page_icon=":chart_with_upwards_trend:")
+st.set_page_config(page_title="Stock Analysis Dashboard", page_icon=":chart_with_upwards_trend:", layout="wide")
+
+# Set background color to black
+st.markdown(
+    """
+    <style>
+    body {
+        background-color: black;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 st.title("Stock Analysis Dashboard")
 
 # Get user input for stock ticker and date range
