@@ -22,6 +22,7 @@ def create_candlestick_chart(stock_data):
     fig.update_layout(title=f"{selected_ticker} Candlestick Chart",
                       xaxis_title="Date",
                       yaxis_title="Price",
+                      paper_bgcolor="black,
                       height=600)
 
     # Remove non-trading days
@@ -71,7 +72,6 @@ if selected_ticker and start_date and end_date:
 
     # Create Candlestick Chart
     st.plotly_chart(create_candlestick_chart(stock_data))
-    fig.update_layout(paper_bgcolor="black")
     
     # Fetch news articles data
     news_data = fetch_news_data(selected_ticker)
