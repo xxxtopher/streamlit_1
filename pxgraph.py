@@ -60,7 +60,22 @@ end_date = st.sidebar.date_input("Enter end date:", current_date)
 default_start_date = current_date - timedelta(days=365)
 start_date = st.sidebar.date_input("Enter start date:", default_start_date)
 
+# Create buttons to select different time frames
+timeframes = {
+    '1 Month': timedelta(days=30),
+    '6 Months': timedelta(days=180),
+    '1 Year': timedelta(days=365),
+    '3 Years': timedelta(days=3*365),
+    'YTD': timedelta(days=(current_date - datetime(current_date.year, 1, 1)).days),
+}
+
+selected_timeframe = st.sidebar.radio("Select Timeframe:", list(timeframes.keys()))
+
 if selected_ticker and start_date and end_date:
+
+    # Adjust start date based on selected timeframe
+    if selected_timeframe in timeframes:
+        start_date = end_date - timeframes[selected_timeframe]
 
     # Download stock price data
     stock_data = download_stock_data(selected_ticker, start_date, end_date)
@@ -74,8 +89,9 @@ if selected_ticker and start_date and end_date:
     # Display news articles if available, else show a message
     st.subheader(f"{selected_ticker} News Articles")
     if len(news_data) > 0:
-        for article in news_data:
-            st.write(f"Title: {article['headline']}")
+        for article in reversed(news_data):  # Display news in reverse chronological order
+            st.markdown(f"**Title:** {article['headline']}")  # Make news title bold
+            st.write(f"Date: {article['datetime']}")
             st.write(f"Summary: {article['summary']}")
             st.write(f"URL: {article['url']}")
             st.write("---")
