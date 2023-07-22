@@ -23,7 +23,22 @@ def create_candlestick_chart(stock_data):
                       yaxis_title="Price",
                       height=600,
                       paper_bgcolor='black',  # Set background color to black
-                      plot_bgcolor='black'    # Set plot background color to black
+                      plot_bgcolor='black',   # Set plot background color to black
+                      xaxis_rangeslider_visible=True,
+                      xaxis_rangeslider_thickness=0.1,
+                      xaxis_rangeslider_bgcolor='rgba(30,30,30,0.4)',
+                      xaxis_rangeslider_bordercolor='grey',
+                      xaxis_rangeslider_borderwidth=1,
+                      xaxis_rangeslider_borderpad=5,
+                      xaxis_rangeselector=dict(
+                          buttons=list([
+                              dict(count=1, label="1M", step="month", stepmode="backward"),
+                              dict(count=6, label="6M", step="month", stepmode="backward"),
+                              dict(count=1, label="YTD", step="year", stepmode="todate"),
+                              dict(count=1, label="1Y", step="year", stepmode="backward"),
+                              dict(step="all")
+                          ])
+                      )
                       )
 
     # Remove non-trading days
@@ -48,7 +63,7 @@ def fetch_news_data(stock_ticker):
 
 # Main Streamlit app
 st.set_page_config(page_title="Stock Analysis Dashboard", page_icon=":chart_with_upwards_trend:", layout="wide", 
-                   initial_sidebar_state="collapsed", background_color='black')
+                   initial_sidebar_state="collapsed", theme="night")  # Use Streamlit's built-in "night" theme
 
 st.title("Stock Analysis Dashboard")
 
@@ -65,22 +80,7 @@ end_date = st.date_input("Enter end date:", current_date)
 default_start_date = current_date - timedelta(days=365)
 start_date = st.date_input("Enter start date:", default_start_date)
 
-# Create buttons to select different time frames
-timeframes = {
-    '1 Month': timedelta(days=30),
-    '6 Months': timedelta(days=180),
-    '1 Year': timedelta(days=365),
-    '3 Years': timedelta(days=3*365),
-    'YTD': timedelta(days=(current_date - datetime(current_date.year, 1, 1)).days),
-}
-
-selected_timeframe = st.radio("Select Timeframe:", list(timeframes.keys()))
-
 if selected_ticker and start_date and end_date:
-
-    # Adjust start date based on selected timeframe
-    if selected_timeframe in timeframes:
-        start_date = end_date - timeframes[selected_timeframe]
 
     # Download stock price data
     stock_data = download_stock_data(selected_ticker, start_date, end_date)
