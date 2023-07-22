@@ -71,6 +71,9 @@ if selected_ticker and start_date and end_date:
 
     # Create Candlestick Chart
     st.plotly_chart(create_candlestick_chart(stock_data))
+    layout = Layout(
+    plot_bgcolor='rgba(0,0,0,0)'
+    )
 
     # Fetch news articles data
     news_data = fetch_news_data(selected_ticker)
