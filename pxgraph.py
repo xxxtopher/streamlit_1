@@ -7,7 +7,7 @@ import requests
 
 # Function to fetch ticker options from Alpha Vantage API based on user input
 def get_ticker_options(query):
-    api_key = '9TOHVSOP9X69QCH'
+    api_key = '9TOHVS9OP9X69QCH'
     base_url = 'https://www.alphavantage.co/query'
     params = {
         'function': 'SYMBOL_SEARCH',
@@ -46,11 +46,15 @@ def create_candlestick_chart(stock_data):
 
     return fig
 
-# Function to fetch news articles data from Alpha Vantage API
+# Function to fetch news articles data from News API
 def fetch_news_data(stock_ticker):
-    api_key = 'YOUR_ALPHA_VANTAGE_API_KEY'
-    url = f'https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol={stock_ticker}&interval=1min&apikey={api_key}'
-    response = requests.get(url)
+    news_api_key = 'YOUR_NEWS_API_KEY'
+    url = f'https://newsapi.org/v2/everything'
+    params = {
+        'q': stock_ticker,
+        'apiKey': news_api_key
+    }
+    response = requests.get(url, params=params)
     data = response.json()
     return data
 
@@ -90,11 +94,11 @@ if selected_ticker and start_date and end_date:
 
     # Display news articles if available, else show a message
     st.subheader(f"{selected_ticker} News Articles")
-    if 'Time Series (1min)' in news_data:
-        for timestamp, news_item in news_data['Time Series (1min)'].items():
-            st.write(f"Timestamp: {timestamp}")
-            st.write(f"Headline: {news_item['1. open']}")
-            st.write(f"URL: {news_item['2. high']}")
+    if 'articles' in news_data and len(news_data['articles']) > 0:
+        for article in news_data['articles']:
+            st.write(f"Title: {article['title']}")
+            st.write(f"Description: {article['description']}")
+            st.write(f"URL: {article['url']}")
             st.write("---")
     else:
-        st.write(f"News articles data not available for {selected_ticker}.")
+        st.write(f"No news articles found for {selected_ticker}.")
