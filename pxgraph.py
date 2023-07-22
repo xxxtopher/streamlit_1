@@ -7,7 +7,7 @@ import requests
 
 # Function to fetch ticker options from Alpha Vantage API based on user input
 def get_ticker_options(query):
-    api_key = '9TOHVS9OP9X69QCH'
+    api_key = 'YOUR_ALPHA_VANTAGE_API_KEY'
     base_url = 'https://www.alphavantage.co/query'
     params = {
         'function': 'SYMBOL_SEARCH',
@@ -46,10 +46,10 @@ def create_candlestick_chart(stock_data):
 
     return fig
 
-# Function to fetch news sentiment data from Alpha Vantage API
-def fetch_news_sentiment_data(stock_ticker):
-    api_key = 'YOUR_ALPHA_VANTAGE_API_KEY'
-    url = f'https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers={stock_ticker}&apikey={api_key}'
+# Function to fetch news articles from Alpha Vantage API
+def fetch_news_articles(stock_ticker):
+    api_key = '9TOHVS9OP9X69QCH'
+    url = f'https://www.alphavantage.co/query?function=TIME_SERIES_NEWS&symbol={stock_ticker}&apikey={api_key}'
     response = requests.get(url)
     data = response.json()
     return data
@@ -85,15 +85,17 @@ if selected_ticker and start_date and end_date:
     # Create Candlestick Chart
     st.plotly_chart(create_candlestick_chart(stock_data))
 
-    # Fetch news sentiment data
-    news_sentiment_data = fetch_news_sentiment_data(selected_ticker)
+    # Fetch news articles
+    news_data = fetch_news_articles(selected_ticker)
 
-    # Display news sentiment data
-    st.subheader(f"{selected_ticker} News Sentiment")
-    if 'sentiment' in news_sentiment_data:
-        sentiment = news_sentiment_data['sentiment']
-        st.write(f"Positive Score: {sentiment['positive']}")
-        st.write(f"Negative Score: {sentiment['negative']}")
-        st.write(f"Neutral Score: {sentiment['neutral']}")
+    # Display news articles
+    st.subheader(f"{selected_ticker} News Articles")
+    if 'articles' in news_data:
+        articles = news_data['articles']
+        for article in articles:
+            st.write(article['title'])
+            st.write(article['publishedAt'])
+            st.write(article['url'])
+            st.write("---")
     else:
-        st.write("News sentiment data not available for this ticker.")
+        st.write(f"News articles not available for {selected_ticker}.")
