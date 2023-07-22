@@ -37,7 +37,11 @@ def create_candlestick_chart(stock_data):
                               dict(count=1, label="YTD", step="year", stepmode="todate"),
                               dict(count=1, label="1Y", step="year", stepmode="backward"),
                               dict(step="all")
-                          ])
+                          ]),
+                          bgcolor='rgba(30,30,30,0.8)',  # Set background color of the time frame buttons
+                          activecolor='rgba(255,255,255,0.6)',  # Set active button color
+                          bordercolor='grey',  # Set border color
+                          font=dict(color='white')  # Set font color
                       )
                       )
 
