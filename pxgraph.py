@@ -5,13 +5,14 @@ from datetime import datetime, timedelta
 import streamlit as st
 import requests
 
-# Download stock data
+# Function to fetch stock data from Yahoo Finance
 def download_stock_data(stock_ticker, start_date, end_date):
     stock_data = yf.download(stock_ticker, start=start_date, end=end_date)
     stock_data.reset_index(inplace=True)
     stock_data["Date"] = stock_data["Date"].dt.strftime('%Y-%m-%d')
     return stock_data
 
+# Function to create a candlestick chart
 def create_candlestick_chart(stock_data):
     fig = go.Figure(data=[go.Candlestick(x=stock_data['Date'],
                                          open=stock_data['Open'],
