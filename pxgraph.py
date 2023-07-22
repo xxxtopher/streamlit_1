@@ -22,7 +22,7 @@ def create_candlestick_chart(stock_data):
     fig.update_layout(title=f"{selected_ticker} Candlestick Chart",
                       xaxis_title="Date",
                       yaxis_title="Price",
-                      paper_bgcolor="black,
+                      paper_bgcolor="black",
                       height=600)
 
     # Remove non-trading days
