@@ -48,17 +48,17 @@ st.set_page_config(page_title="Stock Analysis Dashboard", page_icon=":chart_with
 st.title("Stock Analysis Dashboard")
 
 # Get user input for stock ticker and date range
-selected_ticker = st.sidebar.text_input("Enter stock ticker (e.g. AAPL):")
+selected_ticker = st.text_input("Enter stock ticker (e.g. AAPL):")
 
 # Get the current date
 current_date = datetime.now()
 
 # Set the default end date to the current date
-end_date = st.sidebar.date_input("Enter end date:", current_date)
+end_date = st.date_input("Enter end date:", current_date)
 
 # Set the default start date to one year before the end date
 default_start_date = current_date - timedelta(days=365)
-start_date = st.sidebar.date_input("Enter start date:", default_start_date)
+start_date = st.date_input("Enter start date:", default_start_date)
 
 # Create buttons to select different time frames
 timeframes = {
@@ -69,7 +69,7 @@ timeframes = {
     'YTD': timedelta(days=(current_date - datetime(current_date.year, 1, 1)).days),
 }
 
-selected_timeframe = st.sidebar.radio("Select Timeframe:", list(timeframes.keys()))
+selected_timeframe = st.radio("Select Timeframe:", list(timeframes.keys()))
 
 if selected_ticker and start_date and end_date:
 
