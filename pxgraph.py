@@ -5,23 +5,6 @@ from datetime import datetime, timedelta
 import streamlit as st
 import requests
 
-# Function to fetch ticker options from Alpha Vantage API based on user input
-def get_ticker_options(query):
-    api_key = 'YOUR_ALPHA_VANTAGE_API_KEY'
-    base_url = 'https://www.alphavantage.co/query'
-    params = {
-        'function': 'SYMBOL_SEARCH',
-        'keywords': query,
-        'apikey': api_key
-    }
-    response = requests.get(base_url, params=params)
-    data = response.json()
-
-    if 'bestMatches' in data:
-        return [match['1. symbol'] for match in data['bestMatches']]
-    else:
-        return []
-
 # Download stock data
 def download_stock_data(stock_ticker, start_date, end_date):
     stock_data = yf.download(stock_ticker, start=start_date, end=end_date)
@@ -66,12 +49,6 @@ st.title("Stock Analysis Dashboard")
 
 # Get user input for stock ticker and date range
 selected_ticker = st.sidebar.text_input("Enter stock ticker (e.g. AAPL):")
-
-# Fetch ticker options from Alpha Vantage API based on user input
-ticker_options = get_ticker_options(selected_ticker)
-
-# Display the ticker options as a dropdown
-selected_ticker = st.sidebar.selectbox("Choose a ticker:", ticker_options, index=0)
 
 # Get the current date
 current_date = datetime.now()
