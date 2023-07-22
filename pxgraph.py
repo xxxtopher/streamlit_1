@@ -17,19 +17,6 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Get user input for stock ticker and date range
-selected_ticker = st.text_input("Enter stock ticker (e.g. AAPL):")
-
-# Get the current date
-current_date = datetime.now()
-
-# Set the default end date to the current date
-end_date = st.date_input("Enter end date:", current_date)
-
-# Set the default start date to one year before the end date
-default_start_date = current_date - timedelta(days=365)
-start_date = st.date_input("Enter start date:", default_start_date)
-
 # Function to fetch stock data from Yahoo Finance
 def download_stock_data(stock_ticker, start_date, end_date):
     stock_data = yf.download(stock_ticker, start=start_date, end=end_date)
@@ -96,6 +83,19 @@ st.set_page_config(page_title="Stock Analysis Dashboard", page_icon=":chart_with
                    initial_sidebar_state="collapsed")
 
 st.title("Stock Analysis Dashboard")
+
+# Get user input for stock ticker and date range
+selected_ticker = st.text_input("Enter stock ticker (e.g. AAPL):")
+
+# Get the current date
+current_date = datetime.now()
+
+# Set the default end date to the current date
+end_date = st.date_input("Enter end date:", current_date)
+
+# Set the default start date to one year before the end date
+default_start_date = current_date - timedelta(days=365)
+start_date = st.date_input("Enter start date:", default_start_date)
 
 if selected_ticker and start_date and end_date:
 
