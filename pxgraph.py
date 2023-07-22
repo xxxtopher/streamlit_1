@@ -23,6 +23,7 @@ def create_candlestick_chart(stock_data):
                       xaxis_title="Date",
                       yaxis_title="Price",
                       paper_bgcolor="#000000",
+                      plot_bgcolor="rgba(0,0,0,0)",
                       height=600)
 
     # Remove non-trading days
