@@ -66,7 +66,7 @@ def create_candlestick_chart(stock_data):
 
 # Function to fetch news articles data from Finnhub API
 def fetch_news_data(stock_ticker):
-    finnhub_api_key = 'ciu3hapr01qkv67u3n50ciu3hapr01qkv67u3n5g '
+    finnhub_api_key = 'ciu3hapr01qkv67u3n50ciu3hapr01qkv67u3n5g'
     url = f'https://finnhub.io/api/v1/company-news'
     params = {
         'symbol': stock_ticker,
@@ -78,44 +78,46 @@ def fetch_news_data(stock_ticker):
     data = response.json()
     return data
 
-# Main Streamlit app
-st.set_page_config(page_title="Stock Analysis Dashboard", page_icon=":chart_with_upwards_trend:", layout="wide", 
-                   initial_sidebar_state="collapsed")
+# Function to display the Streamlit app
+def display_app():
+    st.title("Stock Analysis Dashboard")
 
-st.title("Stock Analysis Dashboard")
+    # Get user input for stock ticker and date range
+    selected_ticker = st.text_input("Enter stock ticker (e.g. AAPL):")
 
-# Get user input for stock ticker and date range
-selected_ticker = st.text_input("Enter stock ticker (e.g. AAPL):")
+    # Get the current date
+    current_date = datetime.now()
 
-# Get the current date
-current_date = datetime.now()
+    # Set the default end date to the current date
+    end_date = st.date_input("Enter end date:", current_date)
 
-# Set the default end date to the current date
-end_date = st.date_input("Enter end date:", current_date)
+    # Set the default start date to one year before the end date
+    default_start_date = current_date - timedelta(days=365)
+    start_date = st.date_input("Enter start date:", default_start_date)
 
-# Set the default start date to one year before the end date
-default_start_date = current_date - timedelta(days=365)
-start_date = st.date_input("Enter start date:", default_start_date)
+    if selected_ticker and start_date and end_date:
 
-if selected_ticker and start_date and end_date:
+        # Download stock price data
+        stock_data = download_stock_data(selected_ticker, start_date, end_date)
 
-    # Download stock price data
-    stock_data = download_stock_data(selected_ticker, start_date, end_date)
+        # Create Candlestick Chart
+        st.plotly_chart(create_candlestick_chart(stock_data))
 
-    # Create Candlestick Chart
-    st.plotly_chart(create_candlestick_chart(stock_data))
+        # Fetch news articles data
+        news_data = fetch_news_data(selected_ticker)
 
-    # Fetch news articles data
-    news_data = fetch_news_data(selected_ticker)
+        # Display news articles if available, else show a message
+        st.subheader(f"{selected_ticker} News Articles")
+        if len(news_data) > 0:
+            for article in reversed(news_data):  # Display news in reverse chronological order
+                st.markdown(f"**Title:** {article['headline']}")  # Make news title bold
+                st.write(f"Date: {article['datetime']}")
+                st.write(f"Summary: {article['summary']}")
+                st.write(f"URL: {article['url']}")
+                st.write("---")
+        else:
+            st.write(f"No news articles found for {selected_ticker}.")
 
-    # Display news articles if available, else show a message
-    st.subheader(f"{selected_ticker} News Articles")
-    if len(news_data) > 0:
-        for article in reversed(news_data):  # Display news in reverse chronological order
-            st.markdown(f"**Title:** {article['headline']}")  # Make news title bold
-            st.write(f"Date: {article['datetime']}")
-            st.write(f"Summary: {article['summary']}")
-            st.write(f"URL: {article['url']}")
-            st.write("---")
-    else:
-        st.write(f"No news articles found for {selected_ticker}.")
+# Call the main function to display the Streamlit app
+if __name__ == "__main__":
+    display_app()
