@@ -7,7 +7,7 @@ import requests
 
 # Function to fetch ticker options from Alpha Vantage API based on user input
 def get_ticker_options(query):
-    api_key = '9TOHVS9OP9X69QCH'
+    api_key = '9TOHVSOP9X69QCH'
     base_url = 'https://www.alphavantage.co/query'
     params = {
         'function': 'SYMBOL_SEARCH',
