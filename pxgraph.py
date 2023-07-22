@@ -48,6 +48,9 @@ def fetch_news_data(stock_ticker):
 st.set_page_config(page_title="Stock Analysis Dashboard", page_icon=":chart_with_upwards_trend:")
 st.title("Stock Analysis Dashboard")
 
+# Create a sidebar for input widgets
+st.sidebar.title("Stock Analysis Options")
+
 # Get user input for stock ticker and date range
 selected_ticker = st.sidebar.text_input("Enter stock ticker (e.g. AAPL):")
 
