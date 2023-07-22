@@ -7,7 +7,7 @@ import requests
 
 # Function to fetch ticker options from Alpha Vantage API based on user input
 def get_ticker_options(query):
-    api_key = '9TOHVS9OP9X69QCH'
+    api_key = 'YOUR_ALPHA_VANTAGE_API_KEY'
     base_url = 'https://www.alphavantage.co/query'
     params = {
         'function': 'SYMBOL_SEARCH',
@@ -46,13 +46,15 @@ def create_candlestick_chart(stock_data):
 
     return fig
 
-# Function to fetch news articles data from News API
+# Function to fetch news articles data from Finnhub API
 def fetch_news_data(stock_ticker):
-    news_api_key = 'YOUR_NEWS_API_KEY'
-    url = f'https://newsapi.org/v2/everything'
+    finnhub_api_key = 'ciu3hapr01qkv67u3n50ciu3hapr01qkv67u3n5g'
+    url = f'https://finnhub.io/api/v1/company-news'
     params = {
-        'q': stock_ticker,
-        'apiKey': news_api_key
+        'symbol': stock_ticker,
+        'from': (datetime.now() - timedelta(days=365)).strftime('%Y-%m-%d'),
+        'to': datetime.now().strftime('%Y-%m-%d'),
+        'token': finnhub_api_key
     }
     response = requests.get(url, params=params)
     data = response.json()
@@ -94,10 +96,10 @@ if selected_ticker and start_date and end_date:
 
     # Display news articles if available, else show a message
     st.subheader(f"{selected_ticker} News Articles")
-    if 'articles' in news_data and len(news_data['articles']) > 0:
-        for article in news_data['articles']:
-            st.write(f"Title: {article['title']}")
-            st.write(f"Description: {article['description']}")
+    if len(news_data) > 0:
+        for article in news_data:
+            st.write(f"Title: {article['headline']}")
+            st.write(f"Summary: {article['summary']}")
             st.write(f"URL: {article['url']}")
             st.write("---")
     else:
