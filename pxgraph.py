@@ -7,7 +7,7 @@ import requests
 
 # Function to fetch ticker options from Alpha Vantage API based on user input
 def get_ticker_options(query):
-    api_key = 'YOUR_ALPHA_VANTAGE_API_KEY'
+    api_key = '9TOHVS9OP9X69QCH'
     base_url = 'https://www.alphavantage.co/query'
     params = {
         'function': 'SYMBOL_SEARCH',
@@ -46,10 +46,10 @@ def create_candlestick_chart(stock_data):
 
     return fig
 
-# Function to fetch news articles from Alpha Vantage API
-def fetch_news_articles(stock_ticker):
-    api_key = '9TOHVS9OP9X69QCH'
-    url = f'https://www.alphavantage.co/query?function=TIME_SERIES_NEWS&symbol={stock_ticker}&apikey={api_key}'
+# Function to fetch news articles data from Alpha Vantage API
+def fetch_news_data(stock_ticker):
+    api_key = 'YOUR_ALPHA_VANTAGE_API_KEY'
+    url = f'https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol={stock_ticker}&interval=1min&apikey={api_key}'
     response = requests.get(url)
     data = response.json()
     return data
@@ -85,17 +85,16 @@ if selected_ticker and start_date and end_date:
     # Create Candlestick Chart
     st.plotly_chart(create_candlestick_chart(stock_data))
 
-    # Fetch news articles
-    news_data = fetch_news_articles(selected_ticker)
+    # Fetch news articles data
+    news_data = fetch_news_data(selected_ticker)
 
-    # Display news articles
+    # Display news articles if available, else show a message
     st.subheader(f"{selected_ticker} News Articles")
-    if 'articles' in news_data:
-        articles = news_data['articles']
-        for article in articles:
-            st.write(article['title'])
-            st.write(article['publishedAt'])
-            st.write(article['url'])
+    if 'Time Series (1min)' in news_data:
+        for timestamp, news_item in news_data['Time Series (1min)'].items():
+            st.write(f"Timestamp: {timestamp}")
+            st.write(f"Headline: {news_item['1. open']}")
+            st.write(f"URL: {news_item['2. high']}")
             st.write("---")
     else:
-        st.write(f"News articles not available for {selected_ticker}.")
+        st.write(f"News articles data not available for {selected_ticker}.")
