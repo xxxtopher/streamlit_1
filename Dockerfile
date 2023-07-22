@@ -12,3 +12,4 @@ COPY pxgraph.py .
 
 # Set the Streamlit command to run the app
 CMD ["streamlit", "run", "pxgraph.py"]
+
