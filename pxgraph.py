@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.graph_objs as go
 from datetime import datetime, timedelta
 import streamlit as st
-import feedparser
+import requests
 
 # Function to fetch ticker options from Alpha Vantage API based on user input
 def get_ticker_options(query):
@@ -46,21 +46,23 @@ def create_candlestick_chart(stock_data):
 
     return fig
 
-def search_stock_news(selected_ticker):
-    rss_feed_url = f"https://finance.yahoo.com/rss/headline?s={selected_ticker}"
-    feed = feedparser.parse(rss_feed_url)
-    articles = feed.entries
-    return articles
+# Function to fetch news sentiment data from Alpha Vantage API
+def fetch_news_sentiment_data(stock_ticker):
+    api_key = 'YOUR_ALPHA_VANTAGE_API_KEY'
+    url = f'https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers={stock_ticker}&apikey={api_key}'
+    response = requests.get(url)
+    data = response.json()
+    return data
 
 # Main Streamlit app
-st.set_page_config(page_title="Hong Kong Stock Analysis Dashboard", page_icon=":chart_with_upwards_trend:")
+st.set_page_config(page_title="Stock Analysis Dashboard", page_icon=":chart_with_upwards_trend:")
 st.title("Stock Analysis Dashboard")
 
 # Get user input for stock ticker and date range
-stock_ticker_input = st.sidebar.text_input("Enter stock ticker (e.g. AAPL):")
+selected_ticker = st.sidebar.text_input("Enter stock ticker (e.g. AAPL):")
 
 # Fetch ticker options from Alpha Vantage API based on user input
-ticker_options = get_ticker_options(stock_ticker_input)
+ticker_options = get_ticker_options(selected_ticker)
 
 # Display the ticker options as a dropdown
 selected_ticker = st.sidebar.selectbox("Choose a ticker:", ticker_options, index=0)
@@ -83,16 +85,15 @@ if selected_ticker and start_date and end_date:
     # Create Candlestick Chart
     st.plotly_chart(create_candlestick_chart(stock_data))
 
-    # Search stock news
-    articles = search_stock_news(selected_ticker)
+    # Fetch news sentiment data
+    news_sentiment_data = fetch_news_sentiment_data(selected_ticker)
 
-    # Display stock news
-    st.subheader(f"{selected_ticker} News")
-    if not articles:
-        st.write("No news found")
+    # Display news sentiment data
+    st.subheader(f"{selected_ticker} News Sentiment")
+    if 'sentiment' in news_sentiment_data:
+        sentiment = news_sentiment_data['sentiment']
+        st.write(f"Positive Score: {sentiment['positive']}")
+        st.write(f"Negative Score: {sentiment['negative']}")
+        st.write(f"Neutral Score: {sentiment['neutral']}")
     else:
-        for article in articles:
-            st.write(article.title)
-            st.write(article.description)
-            st.write(article.link)
-            st.write("---")
+        st.write("News sentiment data not available for this ticker.")
