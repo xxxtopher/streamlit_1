@@ -20,6 +20,7 @@ def create_candlestick_chart(stock_data):
                                          low=stock_data['Low'],
                                          close=stock_data['Close'])])
     fig.update_layout(title=f"{selected_ticker} Candlestick Chart",
+                      font_color="white",
                       xaxis_title="Date",
                       yaxis_title="Price",
                       paper_bgcolor="#000000",
