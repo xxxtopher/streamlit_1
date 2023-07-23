@@ -5,8 +5,8 @@ from datetime import datetime, timedelta
 import streamlit as st
 import requests
 
-base="dark"
-primaryColor="black"
+base = "dark"
+primaryColor = "black"
 
 # Function to fetch stock data from Yahoo Finance
 def download_stock_data(stock_ticker, start_date, end_date):
@@ -40,11 +40,15 @@ def create_candlestick_chart(stock_data):
 
 # Function to fetch news articles data from Finnhub API
 def fetch_news_data(stock_ticker):
-    finnhub_api_key = 'ciu3hapr01qkv67u3n50ciu3hapr01qkv67u3n5g'
+    finnhub_api_key = st.secrets["FINNHUB_API_KEY"]
+    if not finnhub_api_key:
+        st.warning("Finnhub API key not found. Please set the 'FINNHUB_API_KEY' environment variable.")
+        return []
+
     url = f'https://finnhub.io/api/v1/company-news'
     params = {
         'symbol': stock_ticker,
-        'from': (datetime.now() - timedelta(days=365)).strftime('%Y-%m-%d'),
+        'from': (datetime.now() - timedelta(days=365*5)).strftime('%Y-%m-%d'),  # 5 years of data
         'to': datetime.now().strftime('%Y-%m-%d'),
         'token': finnhub_api_key
     }
@@ -56,9 +60,6 @@ def fetch_news_data(stock_ticker):
 st.set_page_config(page_title="Stock Analysis Dashboard", page_icon=":chart_with_upwards_trend:", layout="wide")
 st.title("Stock Analysis Dashboard")
 
-# Create a sidebar for input widgets
-st.sidebar.title("Stock Analysis Options")
-
 # Get user input for stock ticker and date range
 selected_ticker = st.sidebar.text_input("Enter stock ticker (e.g. AAPL):")
 
@@ -68,9 +69,28 @@ current_date = datetime.now()
 # Set the default end date to the current date
 end_date = st.sidebar.date_input("Enter end date:", current_date)
 
-# Set the default start date to one year before the end date
-default_start_date = current_date - timedelta(days=365)
+# Set the default start date to five years before the end date
+default_start_date = current_date - timedelta(days=365*5)
 start_date = st.sidebar.date_input("Enter start date:", default_start_date)
+
+# Add buttons for selecting time frames above the chart
+st.beta_container()
+col1, col2, col3, col4, col5 = st.beta_columns(5)
+with col1:
+    if st.button("1 Month"):
+        start_date = current_date - timedelta(days=30)
+with col2:
+    if st.button("3 Months"):
+        start_date = current_date - timedelta(days=90)
+with col3:
+    if st.button("1 Year"):
+        start_date = current_date - timedelta(days=365)
+with col4:
+    if st.button("3 Years"):
+        start_date = current_date - timedelta(days=365*3)
+with col5:
+    if st.button("5 Years"):
+        start_date = current_date - timedelta(days=365*5)
 
 if selected_ticker and start_date and end_date:
 
@@ -79,7 +99,7 @@ if selected_ticker and start_date and end_date:
 
     # Create Candlestick Chart
     st.plotly_chart(create_candlestick_chart(stock_data))
-    
+
     # Fetch news articles data
     news_data = fetch_news_data(selected_ticker)
 
