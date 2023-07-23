@@ -60,22 +60,24 @@ def fetch_news_data(stock_ticker):
 st.set_page_config(page_title="Stock Analysis Dashboard", page_icon=":chart_with_upwards_trend:", layout="wide")
 st.title("Stock Analysis Dashboard")
 
+# Create a sidebar for input widgets
+st.sidebar.title("Stock Analysis Options")
+
 # Get user input for stock ticker and date range
-selected_ticker = st.text_input("Enter stock ticker (e.g. AAPL):")
+selected_ticker = st.sidebar.text_input("Enter stock ticker (e.g. AAPL):")
 
 # Get the current date
 current_date = datetime.now()
 
 # Set the default end date to the current date
-end_date = st.date_input("Enter end date:", current_date)
+end_date = st.sidebar.date_input("Enter end date:", current_date)
 
 # Set the default start date to five years before the end date
 default_start_date = current_date - timedelta(days=365*5)
-start_date = st.date_input("Enter start date:", default_start_date)
+start_date = st.sidebar.date_input("Enter start date:", default_start_date)
 
 # Buttons for selecting time frames
-col1, col2, col3, col4, col5 = st.beta_columns(5)
-time_frame = col3.radio("Select Time Frame:", ["1 Month", "3 Months", "1 Year", "3 Years", "5 Years"])
+time_frame = st.sidebar.radio("Select Time Frame:", ["1 Month", "3 Months", "1 Year", "3 Years", "5 Years"])
 
 # Determine the appropriate start and end dates based on the selected time frame
 if time_frame == "1 Month":
