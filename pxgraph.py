@@ -53,7 +53,7 @@ def fetch_news_data(stock_ticker):
     return data
 
 # Main Streamlit app
-st.set_page_config(page_title="Stock Analysis Dashboard", page_icon=":chart_with_upwards_trend:")
+st.set_page_config(page_title="Stock Analysis Dashboard", page_icon=":chart_with_upwards_trend:", layout="wide")
 st.title("Stock Analysis Dashboard")
 
 # Create a sidebar for input widgets
