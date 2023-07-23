@@ -5,6 +5,8 @@ from datetime import datetime, timedelta
 import streamlit as st
 import requests
 
+base="dark"
+
 # Function to fetch stock data from Yahoo Finance
 def download_stock_data(stock_ticker, start_date, end_date):
     stock_data = yf.download(stock_ticker, start=start_date, end=end_date)
