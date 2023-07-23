@@ -76,6 +76,21 @@ end_date = st.sidebar.date_input("Enter end date:", current_date)
 default_start_date = current_date - timedelta(days=365*5)
 start_date = st.sidebar.date_input("Enter start date:", default_start_date)
 
+# Buttons for selecting time frames
+time_frame = st.sidebar.radio("Select Time Frame:", ["1 Month", "3 Months", "1 Year", "3 Years", "5 Years"])
+
+# Determine the appropriate start and end dates based on the selected time frame
+if time_frame == "1 Month":
+    start_date = current_date - timedelta(days=30)
+elif time_frame == "3 Months":
+    start_date = current_date - timedelta(days=90)
+elif time_frame == "1 Year":
+    start_date = current_date - timedelta(days=365)
+elif time_frame == "3 Years":
+    start_date = current_date - timedelta(days=365*3)
+elif time_frame == "5 Years":
+    start_date = current_date - timedelta(days=365*5)
+
 if selected_ticker and start_date and end_date:
 
     # Download stock price data
@@ -97,5 +112,3 @@ if selected_ticker and start_date and end_date:
             st.write("---")
     else:
         st.write(f"No news articles found for {selected_ticker}.")
-
-  
