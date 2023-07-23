@@ -6,6 +6,7 @@ import streamlit as st
 import requests
 
 base="dark"
+primaryColor="black"
 
 # Function to fetch stock data from Yahoo Finance
 def download_stock_data(stock_ticker, start_date, end_date):
