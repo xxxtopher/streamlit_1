@@ -40,7 +40,7 @@ def create_candlestick_chart(stock_data):
 
 # Function to fetch news articles data from Finnhub API
 def fetch_news_data(stock_ticker):
-    finnhub_api_key = st.secrets["FINNHUB_API_KEY"]
+    finnhub_api_key = "ciu3hapr01qkv67u3n50ciu3hapr01qkv67u3n5g"
     if not finnhub_api_key:
         st.warning("Finnhub API key not found. Please set the 'FINNHUB_API_KEY' environment variable.")
         return []
