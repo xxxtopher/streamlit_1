@@ -60,6 +60,9 @@ def fetch_news_data(stock_ticker):
 st.set_page_config(page_title="Stock Analysis Dashboard", page_icon=":chart_with_upwards_trend:", layout="wide")
 st.title("Stock Analysis Dashboard")
 
+# Create a sidebar for input widgets
+st.sidebar.title("Stock Analysis Options")
+
 # Get user input for stock ticker and date range
 selected_ticker = st.sidebar.text_input("Enter stock ticker (e.g. AAPL):")
 
@@ -72,25 +75,6 @@ end_date = st.sidebar.date_input("Enter end date:", current_date)
 # Set the default start date to five years before the end date
 default_start_date = current_date - timedelta(days=365*5)
 start_date = st.sidebar.date_input("Enter start date:", default_start_date)
-
-# Add buttons for selecting time frames above the chart
-st.beta_container()
-col1, col2, col3, col4, col5 = st.beta_columns(5)
-with col1:
-    if st.button("1 Month"):
-        start_date = current_date - timedelta(days=30)
-with col2:
-    if st.button("3 Months"):
-        start_date = current_date - timedelta(days=90)
-with col3:
-    if st.button("1 Year"):
-        start_date = current_date - timedelta(days=365)
-with col4:
-    if st.button("3 Years"):
-        start_date = current_date - timedelta(days=365*3)
-with col5:
-    if st.button("5 Years"):
-        start_date = current_date - timedelta(days=365*5)
 
 if selected_ticker and start_date and end_date:
 
@@ -113,3 +97,5 @@ if selected_ticker and start_date and end_date:
             st.write("---")
     else:
         st.write(f"No news articles found for {selected_ticker}.")
+
+  
