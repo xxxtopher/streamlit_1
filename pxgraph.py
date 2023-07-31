@@ -15,14 +15,35 @@ def download_stock_data(stock_ticker, start_date, end_date):
     stock_data["Date"] = stock_data["Date"].dt.strftime('%Y-%m-%d')
     return stock_data
 
-# Function to create a candlestick chart
-def create_candlestick_chart(stock_data):
-    fig = go.Figure(data=[go.Candlestick(x=stock_data['Date'],
-                                         open=stock_data['Open'],
-                                         high=stock_data['High'],
-                                         low=stock_data['Low'],
-                                         close=stock_data['Close'])])
-    fig.update_layout(title=f"{selected_ticker} Candlestick Chart",
+# Function to create a candlestick chart with moving average lines
+def create_candlestick_chart_with_ma(stock_data, show_ma_10, show_ma_20, show_ma_50, show_ma_100, show_ma_200):
+    fig = go.Figure()
+
+    # Candlestick trace
+    fig.add_trace(go.Candlestick(x=stock_data['Date'],
+                                 open=stock_data['Open'],
+                                 high=stock_data['High'],
+                                 low=stock_data['Low'],
+                                 close=stock_data['Close'], name='Candlestick'))
+
+    # Moving average traces
+    if show_ma_10:
+        fig.add_trace(go.Scatter(x=stock_data['Date'], y=stock_data['Close'].rolling(window=10).mean(),
+                                 mode='lines', name='MA 10'))
+    if show_ma_20:
+        fig.add_trace(go.Scatter(x=stock_data['Date'], y=stock_data['Close'].rolling(window=20).mean(),
+                                 mode='lines', name='MA 20'))
+    if show_ma_50:
+        fig.add_trace(go.Scatter(x=stock_data['Date'], y=stock_data['Close'].rolling(window=50).mean(),
+                                 mode='lines', name='MA 50'))
+    if show_ma_100:
+        fig.add_trace(go.Scatter(x=stock_data['Date'], y=stock_data['Close'].rolling(window=100).mean(),
+                                 mode='lines', name='MA 100'))
+    if show_ma_200:
+        fig.add_trace(go.Scatter(x=stock_data['Date'], y=stock_data['Close'].rolling(window=200).mean(),
+                                 mode='lines', name='MA 200'))
+
+    fig.update_layout(title=f"{selected_ticker} Candlestick Chart with Moving Averages",
                       title_font_color="white",
                       legend_title_font_color="white",
                       xaxis_title="Date",
@@ -72,13 +93,20 @@ end_date = st.sidebar.date_input("Enter end date:", current_date)
 default_start_date = current_date - timedelta(days=365)
 start_date = st.sidebar.date_input("Enter start date:", default_start_date)
 
+# Tick-box buttons for moving average lines
+show_ma_10 = st.sidebar.checkbox("Show 10-day Moving Average")
+show_ma_20 = st.sidebar.checkbox("Show 20-day Moving Average")
+show_ma_50 = st.sidebar.checkbox("Show 50-day Moving Average")
+show_ma_100 = st.sidebar.checkbox("Show 100-day Moving Average")
+show_ma_200 = st.sidebar.checkbox("Show 200-day Moving Average")
+
 if selected_ticker and start_date and end_date:
 
     # Download stock price data
     stock_data = download_stock_data(selected_ticker, start_date, end_date)
 
-    # Create Candlestick Chart
-    st.plotly_chart(create_candlestick_chart(stock_data))
+    # Create Candlestick Chart with Moving Averages
+    st.plotly_chart(create_candlestick_chart_with_ma(stock_data, show_ma_10, show_ma_20, show_ma_50, show_ma_100, show_ma_200))
     
     # Fetch news articles data
     news_data = fetch_news_data(selected_ticker)
