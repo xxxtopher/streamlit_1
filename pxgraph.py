@@ -94,11 +94,14 @@ default_start_date = current_date - timedelta(days=365)
 start_date = st.sidebar.date_input("Enter start date:", default_start_date)
 
 # Tick-box buttons for moving average lines
-show_ma_10 = st.checkbox("Show 10-day Moving Average")
-show_ma_20 = st.checkbox("Show 20-day Moving Average")
-show_ma_50 = st.checkbox("Show 50-day Moving Average")
-show_ma_100 = st.checkbox("Show 100-day Moving Average")
-show_ma_200 = st.checkbox("Show 200-day Moving Average")
+col1, col2, col3 = st.beta_columns(3)
+show_ma_10 = col1.checkbox("MA 10", value=True)
+show_ma_20 = col2.checkbox("MA 20", value=True)
+show_ma_50 = col3.checkbox("MA 50", value=True)
+
+col4, col5 = st.beta_columns(2)
+show_ma_100 = col4.checkbox("MA 100", value=True)
+show_ma_200 = col5.checkbox("MA 200", value=True)
 
 if selected_ticker and start_date and end_date:
 
