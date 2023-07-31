@@ -93,14 +93,27 @@ end_date = st.sidebar.date_input("Enter end date:", current_date)
 default_start_date = current_date - timedelta(days=365)
 start_date = st.sidebar.date_input("Enter start date:", default_start_date)
 
-# Tick-box buttons for moving average lines
+# Custom CSS to display tick-box buttons horizontally
+horizontal_style = """
+<style>
+    .horizontal-checkboxes > label {
+        display: inline-block;
+        margin-right: 20px;
+    }
+</style>
+"""
+st.markdown(horizontal_style, unsafe_allow_html=True)
+
+# Tick-box buttons for moving average lines, displayed horizontally
 st.markdown("### Moving Averages")
-col1, col2, col3, col4, col5 = st.beta_columns(5)
-show_ma_10 = col1.checkbox("MA 10", value=True)
-show_ma_20 = col2.checkbox("MA 20", value=True)
-show_ma_50 = col3.checkbox("MA 50", value=True)
-show_ma_100 = col4.checkbox("MA 100", value=True)
-show_ma_200 = col5.checkbox("MA 200", value=True)
+with st.beta_container():
+    st.markdown('<div class="horizontal-checkboxes">', unsafe_allow_html=True)
+    show_ma_10 = st.checkbox("MA 10", value=True)
+    show_ma_20 = st.checkbox("MA 20", value=True)
+    show_ma_50 = st.checkbox("MA 50", value=True)
+    show_ma_100 = st.checkbox("MA 100", value=True)
+    show_ma_200 = st.checkbox("MA 200", value=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 if selected_ticker and start_date and end_date:
 
