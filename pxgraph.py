@@ -61,6 +61,20 @@ def create_candlestick_chart_with_ma(stock_data, show_ma_10, show_ma_20, show_ma
 
     return fig
 
+# Function to fetch news articles data from Finnhub API
+def fetch_news_data(stock_ticker):
+    finnhub_api_key = 'ciu3hapr01qkv67u3n50ciu3hapr01qkv67u3n5g'
+    url = f'https://finnhub.io/api/v1/company-news'
+    params = {
+        'symbol': stock_ticker,
+        'from': (datetime.now() - timedelta(days=365)).strftime('%Y-%m-%d'),
+        'to': datetime.now().strftime('%Y-%m-%d'),
+        'token': finnhub_api_key
+    }
+    response = requests.get(url, params=params)
+    data = response.json()
+    return data
+
 # Main Streamlit app
 st.set_page_config(page_title="Stock Analysis Dashboard", page_icon=":chart_with_upwards_trend:", layout="wide")
 st.title("Stock Analysis Dashboard")
