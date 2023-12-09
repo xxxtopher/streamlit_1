@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Dec  8 23:56:52 2023
-
-@author: Xtopher
-"""
-
 import requests
 import json
 import pandas as pd
@@ -21,48 +14,60 @@ p = requests.post('https://api.bls.gov/publicAPI/v2/timeseries/data/', data=data
 # Parse the JSON response
 json_data = json.loads(p.text)
 
-# Create an empty list to store data
-data_list = []
+# Check if the expected keys exist in the JSON response
+if 'Results' in json_data and 'series' in json_data['Results']:
+    # Create an empty list to store data
+    data_list = []
 
-# Iterate through the series and data to extract relevant information
-for series in json_data['Results']['series']:
-    seriesId = series['seriesID']
-    for item in series['data']:
-        year = item['year']
-        period = item['period']
-        value = item['value']
-        footnotes = ""
-        for footnote in item['footnotes']:
-            if footnote:
-                footnotes = footnotes + footnote['text'] + ','
-        if 'M01' <= period <= 'M12':
-            data_list.append([seriesId, year, period, value, footnotes[0:-1]])
+    # Iterate through the series and data to extract relevant information
+    for series in json_data['Results']['series']:
+        seriesId = series['seriesID']
+        for item in series['data']:
+            year = item['year']
+            period = item['period']
+            value = item['value']
+            footnotes = ""
+            for footnote in item['footnotes']:
+                if footnote:
+                    footnotes = footnotes + footnote['text'] + ','
+            if 'M01' <= period <= 'M12':
+                data_list.append([seriesId, year, period, value, footnotes[0:-1]])
 
-# Create a DataFrame from the list
-columns = ["series id", "year", "period", "value", "footnotes"]
-df = pd.DataFrame(data_list, columns=columns)
-df["Date"] = pd.to_datetime(df["year"] + df["period"], format='%YM%m')  # Adjusted format
-df = df.sort_values(by="Date")  # Sort DataFrame based on the "Date" column
-df = df.set_index('Date')  # Set 'Date' as the index
-# Convert 'value' column to numeric
-df['value'] = pd.to_numeric(df['value'], errors='coerce')
-df["Change in Nonfarm Payrolls"] = df["value"].diff()
+    # Create a DataFrame from the list
+    columns = ["series id", "year", "period", "value", "footnotes"]
+    df = pd.DataFrame(data_list, columns=columns)
+    df["Date"] = pd.to_datetime(df["year"] + df["period"], format='%YM%m')  # Adjusted format
+    df = df.sort_values(by="Date")  # Sort DataFrame based on the "Date" column
+    df = df.set_index('Date')  # Set 'Date' as the index
 
-# Handle missing values (replace NaN with 0 or any desired value)
-df["Change in Nonfarm Payrolls"].fillna(0, inplace=True)
+    # Convert 'value' column to numeric
+    df['value'] = pd.to_numeric(df['value'], errors='coerce')
 
-# Filter data starting from January 2021
-df = df[df.index >= '2021-01-01']
+    # Filter data starting from January 2021
+    df = df[df.index >= '2021-01-01']
 
-# Streamlit App
-st.title("Nonfarm Payrolls Monthly Change")
+    # Ensure 'value' column is numeric
+    df['value'] = pd.to_numeric(df['value'], errors='coerce')
 
-# Plot the ratio without normalization
-st.line_chart(df["Change in Nonfarm Payrolls"])
+    # Create 'Change in Nonfarm Payrolls' column
+    df["Change in Nonfarm Payrolls"] = df["value"].diff()
 
-# Annotate the latest data point
-latest_date = df.index[-1]
-latest_value = df["Change in Nonfarm Payrolls"].iloc[-1]
-st.text(f'Latest Change: {latest_value:.0f}K on {latest_date}')
+    # Handle missing values (replace NaN with 0 or any desired value)
+    df["Change in Nonfarm Payrolls"].fillna(0, inplace=True)
 
-st.pyplot()  # This line is needed to display Matplotlib plots in Streamlit
+    # Streamlit App
+    st.title("Nonfarm Payrolls Monthly Change")
+
+    # Plot the ratio without normalization
+    st.line_chart(df["Change in Nonfarm Payrolls"])
+
+    # Annotate the latest data point
+    latest_date = df.index[-1]
+    latest_value = df["Change in Nonfarm Payrolls"].iloc[-1]
+    st.text(f'Latest Change: {latest_value:.0f}K on {latest_date}')
+
+    st.pyplot()  # This line is needed to display Matplotlib plots in Streamlit
+else:
+    st.error("Error: Unexpected JSON structure. Check the API response.")
+    st.json(json_data)  # Display the JSON response for inspection
+
