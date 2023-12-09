@@ -44,13 +44,15 @@ df = pd.DataFrame(data_list, columns=columns)
 df["Date"] = pd.to_datetime(df["year"] + df["period"], format='%YM%m')  # Adjusted format
 df = df.sort_values(by="Date")  # Sort DataFrame based on the "Date" column
 df = df.set_index('Date')  # Set 'Date' as the index
+# Convert 'value' column to numeric
+df['value'] = pd.to_numeric(df['value'], errors='coerce')
 df["Change in Nonfarm Payrolls"] = df["value"].diff()
+
+# Handle missing values (replace NaN with 0 or any desired value)
+df["Change in Nonfarm Payrolls"].fillna(0, inplace=True)
 
 # Filter data starting from January 2021
 df = df[df.index >= '2021-01-01']
-
-# Convert 'value' column to numeric
-df['value'] = pd.to_numeric(df['value'], errors='coerce')
 
 # Streamlit App
 st.title("Nonfarm Payrolls Monthly Change")
