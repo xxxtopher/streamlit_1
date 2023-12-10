@@ -8,7 +8,19 @@ import matplotlib.dates as mdates
 # Assuming the 'hourly_earnings_data.csv' file has a 'Date' column
 df = pd.read_csv('hourly_earnings_data.csv')
 df['Date'] = pd.to_datetime(df['Date'])  # Convert 'Date' to datetime if it's not already
-df = df.sort_values(by='Date')  # Sort by 'Date'
+
+# Additional checks
+print("Data Types:")
+print(df.dtypes)
+
+print("\nDataFrame:")
+print(df)
+
+print("\nMissing Values:")
+print(df.isnull().sum())
+
+print("\nDataFrame Shape:")
+print(df.shape)
 
 # Streamlit App
 st.title("Nonfarm Payrolls Monthly Change")
