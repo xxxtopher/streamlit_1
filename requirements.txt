@@ -7,4 +7,4 @@ beautifulsoup4
 requests
 newsapi-python
 googlesearch-python
-matplotlib
+matplotlib==3.4.3
