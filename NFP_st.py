@@ -32,7 +32,7 @@ ax.plot(df['Date'], df['Change in Nonfarm Payrolls'])
 # Annotate the latest data point
 latest_date = df['Date'].iloc[-1]
 latest_value = df['Change in Nonfarm Payrolls'].iloc[-1]
-ax.annotate(f'Latest Change: {latest_value:.0f}K on {latest_date}',
+#ax.annotate(f'Latest Change: {latest_value:.0f}K on {latest_date}',
             xy=(latest_date, latest_value),
             xytext=(20, 30),
             textcoords='offset points',
