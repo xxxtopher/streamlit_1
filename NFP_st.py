@@ -8,8 +8,8 @@ df = pd.read_csv('hourly_earnings_data.csv')
 # Streamlit App
 st.title("Nonfarm Payrolls Monthly Change")
 
-# Plot the ratio without normalization
-st.line_chart(df["Change in Nonfarm Payrolls"])
+# Plot the ratio with 'Date' as the x-axis
+st.line_chart(df.set_index('Date')["Change in Nonfarm Payrolls"], use_container_width=True)
 
 # Annotate the latest data point
 latest_date = df.index[-1]
