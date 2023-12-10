@@ -29,6 +29,19 @@ st.title("Nonfarm Payrolls Monthly Change")
 fig, ax = plt.subplots(figsize=(10, 6))
 ax.plot(df['Date'], df['Change in Nonfarm Payrolls'])
 
+# Annotate the latest data point
+latest_date = df['Date'].iloc[-1]
+latest_value = df['Change in Nonfarm Payrolls'].iloc[-1]
+ax.annotate(f'Latest Change: {latest_value:.0f}K on {latest_date}',
+            xy=(latest_date, latest_value),
+            xytext=(20, 30),
+            textcoords='offset points',
+            arrowprops=dict(arrowstyle="->", connectionstyle="arc3,rad=.2"),
+            fontsize=12)
+
+# Display the latest value and date in the plot
+ax.text(latest_date, latest_value, f'Latest: {latest_value:.0f}K', ha='right', fontsize=10)
+
 # Format x-axis as dates
 ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m'))
 plt.xticks(rotation=45)
