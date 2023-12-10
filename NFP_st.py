@@ -18,5 +18,7 @@ st.text(f'Latest Change: {latest_value:.0f}K on {latest_date}')
 
 st.pyplot()  # This line is needed to display Matplotlib plots in Streamlit
 
+st.set_option('deprecation.showPyplotGlobalUse', False)
+
 
 
