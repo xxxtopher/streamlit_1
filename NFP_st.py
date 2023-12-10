@@ -30,12 +30,8 @@ ax.annotate(f'Latest Change: {latest_value:.0f}K on {latest_date}',
 ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m'))
 plt.xticks(rotation=45)
 
-
 # Display the plot
-st.pyplot(plt)
-
-# Display the plot
-#st.pyplot(fig)
+st.pyplot(fig)
 
 st.set_option('deprecation.showPyplotGlobalUse', False)
 
